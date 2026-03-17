@@ -1,0 +1,27 @@
+﻿# Default behavior, in case people don't have core.autocrlf set
+* text=lf
+
+# Explicit text to always be normalized on checkout
+*.asciidoc text eol=lf
+*.cs text eol=lf
+*.cshtml text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.ps1 text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.tsx text eol=lf
+*.txt text eol=lf
+.dockerfile text eol=lf
+.dockerignore text eol=lf
+.gitignore text eol=lf
+
+# Exceptions
+*.bat text eol=crlf
+
+# Binary files that might be encountered
+*.ico binary
+*.jpg binary
+*.png binary
