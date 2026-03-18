@@ -156,6 +156,8 @@ public class ApiTests : MyAppTestBase
 
 `Client` is an `HttpClient` wired to the test server. `Services` gives you the app's `IServiceProvider`.
 
+For a working example, the repo's own integration tests do exactly this against the sample app: [`SampleAppTestBase`](tests/Primer.Tests.Integration/SampleAppTestBase.cs) sets up the test fixture, and [`SampleApiTests`](tests/Primer.Tests.Integration/Api/SampleApiTests.cs) shows the tests themselves.
+
 ## PrimerCustom
 
 The standard `IAppInitializer` covers most cases. But if you have your own initializer interface — maybe one that's async, or carries additional context — `PrimerCustom` lets you use Primer's discovery engine with any type:
