@@ -1,8 +1,33 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primer", "src\Primer\Primer.csproj", "{8A32C37D-D4E5-4F7B-962F-E560838CB8BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primer.Tests.Base", "src\Primer.Tests.Base\Primer.Tests.Base.csproj", "{9BA01CC2-7058-4098-BEAE-C05247B67CA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primer.Tests", "tests\Primer.Tests\Primer.Tests.csproj", "{6C5D5297-E295-40B3-881C-B084E838644D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{67154A8D-1291-40DF-8509-8471ABAD1978}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A32C37D-D4E5-4F7B-962F-E560838CB8BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A32C37D-D4E5-4F7B-962F-E560838CB8BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A32C37D-D4E5-4F7B-962F-E560838CB8BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A32C37D-D4E5-4F7B-962F-E560838CB8BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BA01CC2-7058-4098-BEAE-C05247B67CA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BA01CC2-7058-4098-BEAE-C05247B67CA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BA01CC2-7058-4098-BEAE-C05247B67CA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BA01CC2-7058-4098-BEAE-C05247B67CA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C5D5297-E295-40B3-881C-B084E838644D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C5D5297-E295-40B3-881C-B084E838644D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C5D5297-E295-40B3-881C-B084E838644D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C5D5297-E295-40B3-881C-B084E838644D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6C5D5297-E295-40B3-881C-B084E838644D} = {67154A8D-1291-40DF-8509-8471ABAD1978}
 	EndGlobalSection
 EndGlobal
