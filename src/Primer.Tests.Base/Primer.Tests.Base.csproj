@@ -12,11 +12,11 @@
 	<PropertyGroup>
 		<PackageId>Primer.Tests.Base</PackageId>
 		<Version>1.0.0</Version>
-		<Authors>TODO_AUTHOR</Authors>
+		<Authors>kjerk</Authors>
 		<Description>Test infrastructure for Primer-based ASP.NET applications. Provides base classes for HTTP and Playwright browser testing with automatic Primer test mode integration.</Description>
 		<PackageTags>aspnet;testing;primer;testbase;playwright;integration-testing</PackageTags>
-		<PackageProjectUrl>TODO_REPO_URL</PackageProjectUrl>
-		<RepositoryUrl>TODO_REPO_URL</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/kjerk/Primer</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/kjerk/Primer</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
