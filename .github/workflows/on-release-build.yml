@@ -1,0 +1,115 @@
+name: BUILD - Create Release Artifacts
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    name: Pack NuGet packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: SETUP - Checkout
+        uses: actions/checkout@v6
+
+      - name: SETUP - .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: BUILD - Restore & compile
+        run: dotnet build Primer.sln --configuration Release
+
+      - name: CHECK - Unit tests
+        run: dotnet test tests/Primer.Tests.Unit/Primer.Tests.Unit.csproj --configuration Release --no-build
+
+      - name: CHECK - Integration tests
+        run: dotnet test tests/Primer.Tests.Integration/Primer.Tests.Integration.csproj --configuration Release --no-build
+
+      - name: BUILD - Pack NuGet packages
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          dotnet pack src/Primer/Primer.csproj --configuration Release --no-build -o dist /p:Version="${VERSION}"
+          dotnet pack src/Primer.Tests.Base/Primer.Tests.Base.csproj --configuration Release --no-build -o dist /p:Version="${VERSION}"
+
+      - name: BUILD - Create assembly zips for vendoring
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          for tfm in net8.0 net9.0 net10.0; do
+            zip -j "dist/Primer-${VERSION}-${tfm}.zip" src/Primer/bin/Release/${tfm}/Primer.dll src/Primer/bin/Release/${tfm}/Primer.xml 2>/dev/null || \
+            zip -j "dist/Primer-${VERSION}-${tfm}.zip" src/Primer/bin/Release/${tfm}/Primer.dll
+          done
+
+      - name: DEBUG - List built packages
+        run: ls -la dist/
+
+      - name: DEPLOY - Upload packages as artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: nuget-packages
+          path: dist/*
+
+  release:
+    name: Publish release assets
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: SETUP - Checkout
+        uses: actions/checkout@v6
+
+      - name: FETCH - Download all build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: nuget-packages
+          path: dist
+
+      - name: BUILD - Generate SHA256 checksums
+        working-directory: dist
+        run: sha256sum *.nupkg *.zip *.snupkg 2>/dev/null > checksums-sha256.txt || sha256sum *.nupkg *.zip > checksums-sha256.txt
+
+      - name: DEBUG - Show release contents
+        run: |
+          echo "=== Artifacts ==="
+          ls -la dist/
+          echo "=== Checksums ==="
+          cat dist/checksums-sha256.txt
+
+      - name: PROVENANCE - Attest build artifacts
+        id: attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: 'dist/*.nupkg'
+
+      - name: DEPLOY - Upload all assets to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.ref_name }}" dist/*.nupkg dist/*.zip dist/checksums-sha256.txt --clobber
+
+      - name: DEPLOY - Append attestation to release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXISTING_BODY=$(gh release view ${{ github.ref_name }} --json body -q .body)
+          if echo "$EXISTING_BODY" | grep -q '/attestations/'; then
+            echo "Attestation link already present in release notes, skipping."
+          else
+            UPDATED_BODY=$(cat <<EOF
+          ${EXISTING_BODY}
+
+          ---
+          ### Provenance
+          Build artifacts for this release have been signed with [GitHub Artifact Attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations).
+          Verify with: \`gh attestation verify <artifact> --repo ${{ github.repository }}\`
+          [View attestation](${{ steps.attestation.outputs.attestation-url }})
+          EOF
+            )
+            gh release edit ${{ github.ref_name }} --notes "$UPDATED_BODY"
+          fi

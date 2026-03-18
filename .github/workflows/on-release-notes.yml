@@ -1,0 +1,123 @@
+name: DOCS - Generate Release Notes
+
+on:
+  release:
+    types: [edited]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag to generate notes for (e.g. v1.0.0)"
+        required: true
+        type: string
+
+env:
+  TRIGGER_MARKER: "^release-notes"
+  PROJECT_DESCRIPTION: "Primer, a convention-based ASP.NET bootstrapping library"
+  COPILOT_MODEL: ""  # Leave empty for default, or set e.g. "gpt-4o"
+
+permissions:
+  contents: write
+
+jobs:
+  generate-notes:
+    name: Generate release notes
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+    steps:
+      - name: CHECK - Look for trigger marker
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY=$(gh release view "${{ env.RELEASE_TAG }}" --json body -q .body --repo "${{ github.repository }}")
+          if echo "$BODY" | grep -qF "${{ env.TRIGGER_MARKER }}"; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "No ${{ env.TRIGGER_MARKER }} marker found, skipping."
+          fi
+
+      - name: SETUP - Checkout
+        if: steps.check.outputs.found == 'true'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: SETUP - Node.js
+        if: steps.check.outputs.found == 'true'
+        uses: actions/setup-node@v4
+
+      - name: SETUP - Install Copilot CLI
+        if: steps.check.outputs.found == 'true'
+        run: npm install -g @github/copilot
+
+      - name: BUILD - Find previous release tag
+        if: steps.check.outputs.found == 'true'
+        id: prev
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CURRENT="${{ env.RELEASE_TAG }}"
+          PREV=$(gh release list --exclude-drafts --exclude-pre-releases --json tagName -q '.[].tagName' --repo "${{ github.repository }}" | grep -v "^${CURRENT}$" | head -1)
+          if [ -z "$PREV" ]; then
+            echo "No previous release found, using initial commit"
+            PREV=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "tag=$PREV" >> $GITHUB_OUTPUT
+          echo "Previous release: $PREV"
+
+      - name: BUILD - Generate release notes
+        if: steps.check.outputs.found == 'true'
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CURRENT="${{ env.RELEASE_TAG }}"
+          PREV="${{ steps.prev.outputs.tag }}"
+
+          EXISTING_BODY=$(gh release view "$CURRENT" --json body -q .body --repo "${{ github.repository }}")
+          COMMIT_LOG=$(git log --oneline "${PREV}..${CURRENT}" 2>/dev/null || git log --oneline "${PREV}..HEAD")
+          DIFF_STAT=$(git diff --stat "${PREV}..${CURRENT}" 2>/dev/null || git diff --stat "${PREV}..HEAD")
+
+          MODEL_FLAG=""
+          if [ -n "${{ env.COPILOT_MODEL }}" ]; then
+            MODEL_FLAG="--model ${{ env.COPILOT_MODEL }}"
+          fi
+
+          copilot -p "Generate concise release notes for version ${CURRENT} of ${{ env.PROJECT_DESCRIPTION }}.
+
+          Here is the commit log since the last release (${PREV}):
+          ${COMMIT_LOG}
+
+          Here is the diff stat:
+          ${DIFF_STAT}
+
+          The existing release body already contains this content (preserve any attestation/provenance sections):
+          === BEGIN EXISTING RELEASE NOTES ===
+          ${EXISTING_BODY}
+          === END EXISTING RELEASE NOTES ===
+
+          Write release notes that:
+          - Start with a one-line summary of what this release is about
+          - Group changes into categories only if there are enough to warrant it (Features, Fixes, Internal)
+          - Be brief and direct, no filler
+          - Preserve any existing Provenance section exactly as-is at the bottom
+          - Replace the ${{ env.TRIGGER_MARKER }} marker with the actual notes
+          - Output ONLY the final release body text, nothing else" \
+            -s --allow-tool='shell(git:*)' --no-ask-user $MODEL_FLAG > release-notes.md
+
+          cat release-notes.md
+
+      - name: BUILD - Audit release notes for authenticity # lol
+        if: steps.check.outputs.found == 'true'
+        run: sed -i 's/—/-/g' release-notes.md
+
+      - name: DEPLOY - Update release body
+        if: steps.check.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release edit "${{ env.RELEASE_TAG }}" \
+            --notes-file release-notes.md \
+            --repo "${{ github.repository }}"

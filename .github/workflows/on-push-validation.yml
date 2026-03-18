@@ -1,0 +1,36 @@
+name: CHECK - Push Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Build & Check
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: SETUP - Checkout
+        uses: actions/checkout@v6
+
+      - name: SETUP - .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: BUILD - Restore & compile
+        run: dotnet build Primer.sln --configuration Release
+
+      - name: CHECK - Unit tests
+        run: dotnet test tests/Primer.Tests.Unit/Primer.Tests.Unit.csproj --configuration Release --no-build
+
+      - name: CHECK - Integration tests
+        run: dotnet test tests/Primer.Tests.Integration/Primer.Tests.Integration.csproj --configuration Release --no-build
