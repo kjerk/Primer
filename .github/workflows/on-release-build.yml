@@ -94,6 +94,7 @@ jobs:
         run: gh release upload "${{ github.ref_name }}" dist/*.nupkg dist/*.zip dist/checksums-sha256.txt --clobber
 
       - name: DEPLOY - Append attestation to release notes
+        if: false
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
