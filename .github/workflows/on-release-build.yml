@@ -83,6 +83,7 @@ jobs:
           cat dist/checksums-sha256.txt
 
       - name: PROVENANCE - Attest build artifacts
+        if: false
         id: attestation
         uses: actions/attest@v4
         with:
