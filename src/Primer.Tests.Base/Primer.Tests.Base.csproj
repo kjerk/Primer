@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>Primer.Tests.Base</PackageId>
+		<PackageId>AppPrimer.Tests.Base</PackageId>
 		<Version>1.0.0</Version>
 		<Authors>kjerk</Authors>
 		<Description>Test infrastructure for Primer-based ASP.NET applications. Provides base classes for HTTP and Playwright browser testing with automatic Primer test mode integration.</Description>

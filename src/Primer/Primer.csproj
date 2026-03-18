@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>Primer</PackageId>
+		<PackageId>AppPrimer</PackageId>
 		<Version>1.0</Version>
 		<Authors>kjerk</Authors>
 		<Description>Convention-based ASP.NET bootstrapping. Automatically discovers and executes IAppInitializer implementations, replacing monolithic Program.cs files with focused, testable, single-responsibility configuration classes.</Description>

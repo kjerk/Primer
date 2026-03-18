@@ -42,7 +42,7 @@ Need to understand rate limiting? Open `AppInitRateLimiting.cs`. Database config
 ## Install
 
 ```
-dotnet add package Primer
+dotnet add package AppPrimer
 ```
 
 Targets net8.0, net9.0, and net10.0. Zero external dependencies.
@@ -111,7 +111,7 @@ Useful for feature-flagging during development or temporarily pulling something 
 Primer ships with a companion package for integration testing:
 
 ```
-dotnet add package Primer.Tests.Base
+dotnet add package AppPrimer.Tests.Base
 ```
 
 The key idea: test mode bypasses auto-discovery entirely. You choose exactly which initializers to wire up per test fixture — no surprise middleware, no ambient configuration leaking between tests.
