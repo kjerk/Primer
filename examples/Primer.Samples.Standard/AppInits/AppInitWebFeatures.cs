@@ -10,14 +10,20 @@ public class AppInitWebFeatures : IAppInitializer
 	{
 		builder.Services.AddControllers();
 		builder.Services.AddRazorPages();
+		
+		builder.Services.AddRouting(options => {
+			options.LowercaseUrls = true;
+		});
 	}
 	
 	public void ConfigureApp(WebApplication app)
 	{
-		app.UseHttpsRedirection();
+		// app.UseHttpsRedirection();
+		app.UseDefaultFiles();
 		app.UseStaticFiles();
 		app.UseRouting();
+		
 		app.MapControllers();
-		app.MapRazorPages();
+		app.MapRazorPages().WithStaticAssets();
 	}
 }

@@ -2,7 +2,7 @@
 	"profiles": {
 		"http": {
 			"commandName": "Project",
-			"launchBrowser": true,
+			"launchBrowser": false,
 			"launchUrl": "",
 			"applicationUrl": "http://localhost:5100",
 			"environmentVariables": {

@@ -12,4 +12,10 @@
 		<ProjectReference Include="..\..\src\Primer\Primer.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Content Update="wwwroot\index.html">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
 </Project>
