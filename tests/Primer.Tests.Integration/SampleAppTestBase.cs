@@ -1,3 +1,4 @@
+using Primer.Samples.Standard;
 using Primer.Samples.Standard.AppInits;
 
 namespace Primer.Tests.Integration;
