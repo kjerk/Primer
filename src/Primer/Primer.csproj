@@ -1,11 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-	
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<LangVersion>latestmajor</LangVersion>
 		<OutputType>Library</OutputType>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageId>Primer</PackageId>
+		<Version>1.0</Version>
+		<Authors>kjerk</Authors>
+		<Description>Convention-based ASP.NET bootstrapping. Automatically discovers and executes IAppInitializer implementations, replacing monolithic Program.cs files with focused, testable, single-responsibility configuration classes.</Description>
+		<PackageTags>aspnet;bootstrapping;startup;convention;initialization;modular</PackageTags>
+		<PackageProjectUrl>http://www.github.com/kjerk/Primer</PackageProjectUrl>
+		<RepositoryUrl>http://www.github.com/kjerk/Primer</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
 </Project>

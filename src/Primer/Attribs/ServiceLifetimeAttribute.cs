@@ -1,4 +1,6 @@
-﻿namespace Primer.Attribs;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace Primer.Attribs;
 
 // TODO: Not implemented yet.
 [AttributeUsage(AttributeTargets.Class)]

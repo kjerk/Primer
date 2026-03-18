@@ -1,4 +1,6 @@
-﻿namespace Primer.AppInits;
+﻿using Microsoft.AspNetCore.Builder;
+
+namespace Primer.AppInits;
 
 public interface IAppInitializer
 {
